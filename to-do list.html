@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>to-do list</title>
+    <style>
+      body{
+          background: linear-gradient(
+          to right,
+          #fff4b1, 
+          #f9d976   
+        );
+         color: #333;
+         text-align: center;
+
+      }
+      .title{
+        color: white;
+        font-weight: bold;
+        font-size: 50px;
+      }
+      .to-input-div{
+        margin-bottom: 50px;
+      }
+      .todo1,.js-due-date {
+      width: 100%;
+      max-width: 400px;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-family: arial;
+      background-color: #fff;
+      color: #333;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+    .todo1,.js-due-date :focus {
+      border-color: #6366f1; 
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); 
+    }
+
+    .delete{
+      background-color: red;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      font-family: arial;
+      cursor: pointer;
+
+    }
+          button {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 1rem;
+      font-family: arial;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    button:hover {
+      background-color: #4338ca;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      background-color: #3730a3;
+      transform: translateY(1px);
+    }
+
+    button:disabled {
+      background-color: #cbd5e1;
+    }
+
+      .container{
+        display:grid;
+        column-gap: 50px;
+        row-gap: 30px;
+        padding: 12px 16px;
+        grid-template-columns: repeat(4, 1fr);
+        animation: fadeIn 0.3s ease;
+        font-family: arial;
+        overflow-y: auto;
+        max-height: 300px; 
+        background-color: #5a3e1b; 
+        color: #f5f5f5;
+        box-shadow: 0 4px 20px rgba(90, 62, 27, 0.5);
+        border-radius: 10px;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+}
+   
+
+    </style>
+  </head>
+  <body>
+    <div class="to-input-div">
+      <p class="title">To Do list</p>
+    <input type="textarea" placeholder="Todo Name"class="todo1">
+    <input type="date" class="js-due-date">
+    <button onclick="arr1()">Add</button>
+  <select id="dueFilter" onchange="renderList()">
+  <option value="all">All</option>
+  <option value="today">Due Today</option>
+  <option value="week">Due This Week</option>
+  <option value="overdue">Overdue</option>
+</select>
+    <p class="todo-display"></p>
+    
+    </div>
+    
+    <div class="container"></div>
+
+ </body>
+  <script>
+let todolist1 = [];
+
+  function renderList() {
+    const filter = document.getElementById('dueFilter').value;
+    const today = new Date();
+    const oneWeekLater = new Date();
+    oneWeekLater.setDate(today.getDate() + 7);
+
+    let filteredList = todolist1.filter(task => {
+      if (!task.duedate) return filter === 'all'; 
+      const taskDate = new Date(task.duedate);
+      switch (filter) {
+        case 'all': return true;
+        case 'today': return taskDate.toDateString() === today.toDateString();
+        case 'week': return taskDate >= today && taskDate <= oneWeekLater;
+        case 'overdue': return taskDate < today;
+        default: return true;
+      }
+    });
+
+    let todolisthtml = '';
+    filteredList.forEach((task, i) => {
+      todolisthtml += `
+        <div>${i + 1}</div>
+        <div>${task.name}</div>
+        <div>${task.duedate || 'No due date'}</div>
+        <button class="delete" onclick="deleteItem(${i})">Delete</button>
+      `;
+    });
+
+    if(todolisthtml === '') {
+      todolisthtml = '<p>No tasks to show.</p>';
+    }
+    document.querySelector('.container').innerHTML = todolisthtml;
+  }
+
+  function arr1() {
+    let val = document.querySelector('.todo1').value.trim();
+    let date = document.querySelector('.js-due-date').value;
+    if (val) {
+      todolist1.push({ name: val, duedate: date });
+      document.querySelector('.todo1').value = '';
+      document.querySelector('.js-due-date').value = '';
+      renderList();
+    } else {
+      alert("Enter a task name");
+    }
+  }
+
+  function deleteItem(index) {
+    todolist1.splice(index, 1);
+    renderList();
+  }
+
+  renderList();
+
+
+
+  
+   
+  </script>
+</html>
